@@ -50,4 +50,10 @@ public class NodeImpl implements Node
     {
         return unmodifiableList(outputs);
     }
+    
+    @Override
+    public void setLocation(double x, double y)
+    {
+        setLocation(new Point(x, y));
+    }
 }

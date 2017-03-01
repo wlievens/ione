@@ -12,5 +12,9 @@ public interface Node
     
     Point getLocation();
     
+    void setLocation(Point point);
+    
     List<Output> getOutputs();
+    
+    void setLocation(double x, double y);
 }
