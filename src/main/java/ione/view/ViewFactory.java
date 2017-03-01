@@ -10,4 +10,6 @@ public interface ViewFactory
     }
     
     GraphEditorView createGraphEditorView();
+    
+    NodeView createNodeView();
 }

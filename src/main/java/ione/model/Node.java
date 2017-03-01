@@ -8,9 +8,13 @@ public interface Node
     
     Output addOutput(Output output);
     
+    int getInputCount();
+    
     List<Input> getInputs();
     
     Point getLocation();
+    
+    int getOutputCount();
     
     void setLocation(Point point);
     

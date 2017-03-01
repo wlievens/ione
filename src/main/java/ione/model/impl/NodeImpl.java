@@ -40,9 +40,21 @@ public class NodeImpl implements Node
     }
     
     @Override
+    public int getInputCount()
+    {
+        return inputs.size();
+    }
+    
+    @Override
     public List<Input> getInputs()
     {
         return unmodifiableList(inputs);
+    }
+    
+    @Override
+    public int getOutputCount()
+    {
+        return outputs.size();
     }
     
     @Override

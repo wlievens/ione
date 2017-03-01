@@ -27,23 +27,31 @@ public class FxDemo extends Application
         {
             Node node1 = graphFactory.createNode(graph);
             Input node1_in1 = graphFactory.createInput(node1);
+            Input node1_in2 = graphFactory.createInput(node1);
             Output node1_out1 = graphFactory.createOutput(node1);
-            
+    
             Node node2 = graphFactory.createNode(graph);
             Input node2_in1 = graphFactory.createInput(node2);
             Output node2_out1 = graphFactory.createOutput(node2);
-            
-            graphFactory.createEdge(graph, node2_out1, node1_in1);
+    
+            Node node3 = graphFactory.createNode(graph);
+            Input node3_in1 = graphFactory.createInput(node3);
+            Output node3_out1 = graphFactory.createOutput(node3);
+    
             graphFactory.createEdge(graph, node1_out1, node2_in1);
+            graphFactory.createEdge(graph, node2_out1, node3_in1);
+            graphFactory.createEdge(graph, node3_out1, node1_in1);
+            graphFactory.createEdge(graph, node3_out1, node1_in2);
             
-            node1.setLocation(-100, 0);
-            node2.setLocation(+100, 0);
+            node1.setLocation(200, 250);
+            node2.setLocation(500, 150);
+            node3.setLocation(350, 400);
         }
         
-        GraphEditorController controller = new GraphEditorController(ViewFactory.createJavaFX());
+        GraphEditorController controller = new GraphEditorController(ViewFactory.createJavaFX(), graph);
         controller.setup();
         
-        Scene scene = new Scene((Parent)controller.getView(), 400, 400);
+        Scene scene = new Scene((Parent)controller.getView(), 700, 500);
         stage.setTitle(FxDemo.class.getName());
         stage.setScene(scene);
         stage.show();
