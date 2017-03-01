@@ -9,6 +9,8 @@ public interface ViewFactory
         return new FxViewFactory();
     }
     
+    EdgeView createEdgeView();
+    
     GraphEditorView createGraphEditorView();
     
     NodeView createNodeView();

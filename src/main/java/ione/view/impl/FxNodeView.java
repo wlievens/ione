@@ -1,7 +1,9 @@
 package ione.view.impl;
 
+import ione.model.Point;
 import ione.view.NodeView;
 import javafx.animation.TranslateTransition;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -24,14 +26,42 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FxNodeView extends BorderPane implements NodeView
 {
     private static final Duration ANIMATION_DURATION = Duration.millis(500);
     
     private static final float PORT_ARC_RADIUS = 10.0f;
-    
+    private final List<Arc> inputArcs = new ArrayList<>();
+    private final List<Arc> outputArcs = new ArrayList<>();
     @Setter
     private Listener listener;
+    
+    @Override
+    public Point getInputLocation(int index)
+    {
+        if (index >= 0 && index < inputArcs.size())
+        {
+            Arc arc = inputArcs.get(index);
+            Bounds bounds = arc.localToScene(arc.getBoundsInLocal());
+            return getCenter(bounds);
+        }
+        return null;
+    }
+    
+    @Override
+    public Point getOutputLocation(int index)
+    {
+        if (index >= 0 && index < outputArcs.size())
+        {
+            Arc arc = outputArcs.get(index);
+            Bounds bounds = arc.localToScene(arc.getBoundsInLocal());
+            return getCenter(bounds);
+        }
+        return null;
+    }
     
     @Override
     public void setBox(double x, double y, double width, double height)
@@ -43,6 +73,7 @@ public class FxNodeView extends BorderPane implements NodeView
         TranslateTransition transition = new TranslateTransition(ANIMATION_DURATION, this);
         transition.setByX(x - getLayoutX());
         transition.setByY(y - getLayoutY());
+        transition.setOnFinished(event -> listener.onPositionUpdated());
         transition.play();
     }
     
@@ -63,6 +94,11 @@ public class FxNodeView extends BorderPane implements NodeView
         return spacer2;
     }
     
+    private Point getCenter(Bounds bounds)
+    {
+        return new Point((bounds.getMinX() + bounds.getMaxX()) / 2, (bounds.getMinY() + bounds.getMaxY()) / 2);
+    }
+    
     private Node setupCenter()
     {
         BorderPane pane = new BorderPane();
@@ -81,6 +117,7 @@ public class FxNodeView extends BorderPane implements NodeView
         
         if (listener != null)
         {
+            inputArcs.clear();
             for (int n = 0; n < listener.getInputCount(); ++n)
             {
                 Arc arc = new Arc();
@@ -92,6 +129,7 @@ public class FxNodeView extends BorderPane implements NodeView
                 arc.setFill(Color.LIGHTSALMON);
                 arc.setStroke(Color.DARKRED);
                 box.getChildren().add(arc);
+                inputArcs.add(arc);
             }
         }
         
@@ -113,6 +151,7 @@ public class FxNodeView extends BorderPane implements NodeView
         
         if (listener != null)
         {
+            outputArcs.clear();
             for (int n = 0; n < listener.getOutputCount(); ++n)
             {
                 Arc arc = new Arc();
@@ -124,6 +163,7 @@ public class FxNodeView extends BorderPane implements NodeView
                 arc.setFill(Color.LIGHTSALMON);
                 arc.setStroke(Color.DARKRED);
                 box.getChildren().add(arc);
+                outputArcs.add(arc);
             }
         }
         

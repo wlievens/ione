@@ -1,5 +1,7 @@
 package ione.view;
 
+import ione.model.Point;
+
 public interface NodeView
 {
     interface Listener
@@ -9,7 +11,13 @@ public interface NodeView
         int getOutputCount();
         
         String getTitle();
+        
+        void onPositionUpdated();
     }
+    
+    Point getInputLocation(int index);
+    
+    Point getOutputLocation(int index);
     
     void setBox(double x, double y, double width, double height);
     

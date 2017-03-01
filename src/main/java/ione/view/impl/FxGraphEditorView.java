@@ -1,5 +1,6 @@
 package ione.view.impl;
 
+import ione.view.EdgeView;
 import ione.view.GraphEditorView;
 import ione.view.NodeView;
 import javafx.scene.Node;
@@ -9,9 +10,19 @@ import lombok.NonNull;
 public class FxGraphEditorView extends Pane implements GraphEditorView
 {
     @Override
+    public void addEdgeView(EdgeView view)
+    {
+        Node fxNode = (Node)view;
+        getChildren().add(fxNode);
+        fxNode.toBack();
+    }
+    
+    @Override
     public void addNodeView(@NonNull NodeView view)
     {
-        getChildren().add((Node)view);
+        Node fxNode = (Node)view;
+        getChildren().add(fxNode);
+        fxNode.toFront();
     }
     
     @Override
