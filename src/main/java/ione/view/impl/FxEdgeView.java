@@ -3,12 +3,17 @@ package ione.view.impl;
 import ione.view.EdgeView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import lombok.Setter;
 
 public class FxEdgeView extends Line implements EdgeView
 {
+    @Setter
+    private Listener listener;
+    
     @Override
-    public void setListener(Listener listener)
+    public void hide()
     {
+        setVisible(false);
     }
     
     @Override
@@ -25,5 +30,11 @@ public class FxEdgeView extends Line implements EdgeView
     {
         setStroke(Color.BLUEVIOLET);
         setStrokeWidth(3.0);
+    }
+    
+    @Override
+    public void show()
+    {
+        setVisible(true);
     }
 }

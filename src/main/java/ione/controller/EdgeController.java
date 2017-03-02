@@ -24,6 +24,11 @@ public class EdgeController
     @Getter
     private EdgeView view;
     
+    public void hideView()
+    {
+        view.hide();
+    }
+    
     public void setup()
     {
         view = viewFactory.createEdgeView();
@@ -31,5 +36,10 @@ public class EdgeController
         {
         });
         view.setup();
+    }
+    
+    public void showView()
+    {
+        view.show();
     }
 }

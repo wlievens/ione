@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -34,6 +35,48 @@ public class GraphEditorController
     public void setup()
     {
         view = viewFactory.createGraphEditorView();
+        view.setListener(new GraphEditorView.Listener()
+        {
+            @Override
+            public void onTestClick()
+            {
+                for (Node node : graph.getNodes())
+                {
+                    do
+                    {
+                        double x = 140 + Math.random() * 500;
+                        double y = 140 + Math.random() * 400;
+                        boolean valid = graph.getNodes().stream()
+                                .filter(other -> other != node)
+                                .noneMatch(other -> other.getLocation().distance(new Point(x, y)) < 210);
+                        if (valid)
+                        {
+                            node.setLocation(x, y);
+                            break;
+                        }
+                    }
+                    while (true);
+                }
+                
+                System.out.println("DISTANCES");
+                List<Node> nodes = graph.getNodes();
+                for (int i = 0; i < nodes.size(); i++)
+                {
+                    Node node1 = nodes.get(i);
+                    for (int j = i + 1; j < nodes.size(); j++)
+                    {
+                        Node node2 = nodes.get(j);
+                        System.out.println("\t" + node1.getLocation().distance(node2.getLocation()));
+                    }
+                }
+                
+                for (EdgeController edgeController : edgeControllers.values())
+                {
+                    edgeController.hideView();
+                }
+                updateNodeViews();
+            }
+        });
         view.setup();
         updateNodeViews();
         updateEdgeViews();
@@ -68,6 +111,7 @@ public class GraphEditorController
                 if (start != null && end != null)
                 {
                     edgeView.setLocation(start.getX(), start.getY(), end.getX(), end.getY());
+                    edgeController.showView();
                 }
             }
         }

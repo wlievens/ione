@@ -34,8 +34,10 @@ public class FxNodeView extends BorderPane implements NodeView
     private static final Duration ANIMATION_DURATION = Duration.millis(500);
     
     private static final float PORT_ARC_RADIUS = 10.0f;
+    
     private final List<Arc> inputArcs = new ArrayList<>();
     private final List<Arc> outputArcs = new ArrayList<>();
+    
     @Setter
     private Listener listener;
     
@@ -71,8 +73,9 @@ public class FxNodeView extends BorderPane implements NodeView
         setPrefSize(width, height);
         
         TranslateTransition transition = new TranslateTransition(ANIMATION_DURATION, this);
-        transition.setByX(x - getLayoutX());
-        transition.setByY(y - getLayoutY());
+        Bounds bounds = localToScene(getBoundsInLocal());
+        transition.setByX(x - bounds.getMinX());
+        transition.setByY(y - bounds.getMinY());
         transition.setOnFinished(event -> listener.onPositionUpdated());
         transition.play();
     }

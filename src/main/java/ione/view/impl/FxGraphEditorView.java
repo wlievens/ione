@@ -6,9 +6,13 @@ import ione.view.NodeView;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import lombok.NonNull;
+import lombok.Setter;
 
 public class FxGraphEditorView extends Pane implements GraphEditorView
 {
+    @Setter
+    private Listener listener;
+    
     @Override
     public void addEdgeView(EdgeView view)
     {
@@ -37,6 +41,10 @@ public class FxGraphEditorView extends Pane implements GraphEditorView
                     FxNodeView fxNode = (FxNodeView)node;
                     System.out.println(fxNode.getLayoutBounds());
                 }
+            }
+            if (listener!=null)
+            {
+                listener.onTestClick();
             }
         });
     }

@@ -51,7 +51,7 @@ public class FxDemo extends Application
         GraphEditorController controller = new GraphEditorController(ViewFactory.createJavaFX(), graph);
         controller.setup();
         
-        Scene scene = new Scene((Parent)controller.getView(), 700, 500);
+        Scene scene = new Scene((Parent)controller.getView(), 900, 700);
         stage.setTitle(FxDemo.class.getName());
         stage.setScene(scene);
         stage.show();
