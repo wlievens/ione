@@ -139,7 +139,7 @@ public class GraphEditorController
             }
             NodeView nodeView = nodeController.getView();
             Point location = node.getLocation();
-            double width = 220.0;
+            double width = 180.0;
             double height = 90.0;
             nodeView.setBox(location.getX() - width / 2, location.getY() - height / 2, width, height);
         }

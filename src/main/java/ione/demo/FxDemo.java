@@ -36,7 +36,7 @@ public class FxDemo extends Application
             
             Node node2 = graphFactory.createNode(graph, createNodeValue("Node Two", new Color(0.13, 0.87, 0.51)));
             Input node2_in1 = graphFactory.createInput(node2);
-            Output node2_out1 = graphFactory.createOutput(node2, createPortValue("Output"));
+            Output node2_out1 = graphFactory.createOutput(node2, createPortValue("Output", new Color(0.81, 0.23, 0.11)));
             
             Node node3 = graphFactory.createNode(graph, createNodeValue("Node Three", new Color(0.40, 0.34, 0.84)));
             Input node3_in1 = graphFactory.createInput(node3);
@@ -70,10 +70,11 @@ public class FxDemo extends Application
         return value;
     }
     
-    private PortValue createPortValue(String name)
+    private PortValue createPortValue(String name, Color fillColor)
     {
         SimplePortValue value = new SimplePortValue();
         value.setName(name);
+        value.setFillColor(fillColor);
         return value;
     }
 }

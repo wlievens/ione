@@ -22,9 +22,13 @@ public interface NodeView
     
     void setFillColor(Color fillColor);
     
+    void setInputFillColor(int index, Color fillColor);
+    
     void setInputName(int index, String name);
     
     void setListener(Listener listener);
+    
+    void setOutputFillColor(int index, Color fillColor);
     
     void setOutputName(int index, String name);
     

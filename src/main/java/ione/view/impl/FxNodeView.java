@@ -32,6 +32,8 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ione.view.impl.FxUtil.fxColor;
+
 public class FxNodeView extends BorderPane implements NodeView
 {
     private static final Duration ANIMATION_DURATION = Duration.millis(500);
@@ -97,9 +99,18 @@ public class FxNodeView extends BorderPane implements NodeView
     @Override
     public void setFillColor(ione.util.Color fillColor)
     {
-        Color fxFillColor = FxUtil.fxColor(fillColor);
+        Color fxFillColor = fxColor(fillColor);
         setBackground(new Background(new BackgroundFill(fxFillColor, CORNER_RADII, Insets.EMPTY)));
         setBorder(new Border(new BorderStroke(fxFillColor.darker(), BorderStrokeStyle.SOLID, CORNER_RADII, BORDER_WIDTHS)));
+    }
+    
+    @Override
+    public void setInputFillColor(int index, ione.util.Color fillColor)
+    {
+        if (index >= 0 && index < inputConnectors.size())
+        {
+            ((Shape)inputConnectors.get(index)).setFill(fillColor == null ? Color.WHITE : fxColor(fillColor));
+        }
     }
     
     @Override
@@ -108,6 +119,15 @@ public class FxNodeView extends BorderPane implements NodeView
         if (index >= 0 && index < inputLabels.size())
         {
             inputLabels.get(index).setText(name);
+        }
+    }
+    
+    @Override
+    public void setOutputFillColor(int index, ione.util.Color fillColor)
+    {
+        if (index >= 0 && index < outputConnectors.size())
+        {
+            ((Shape)outputConnectors.get(index)).setFill(fillColor == null ? Color.WHITE : fxColor(fillColor));
         }
     }
     
@@ -145,10 +165,8 @@ public class FxNodeView extends BorderPane implements NodeView
         control.setArcHeight(BOX_ROUNDING);
         control.setWidth(PORT_CONTROL_SIZE);
         control.setHeight(PORT_CONTROL_SIZE);
-        control.setFill(Color.LIGHTSALMON);
-        control.setStroke(Color.DARKRED);
-        control.setFill(Color.LIGHTSALMON);
-        control.setStroke(Color.DARKRED);
+        control.setStroke(Color.BLACK);
+        control.setFill(Color.WHITE);
         return control;
     }
     

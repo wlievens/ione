@@ -82,12 +82,14 @@ public class NodeController
             Input input = node.getInputs().get(index);
             PortValue value = input.getValue();
             view.setInputName(index, value == null ? null : value.getName());
+            view.setInputFillColor(index, value == null ? null : value.getFillColor());
         }
         for (int index = 0; index < node.getOutputs().size(); index++)
         {
             Output output = node.getOutputs().get(index);
             PortValue value = output.getValue();
             view.setOutputName(index, value == null ? null : value.getName());
+            view.setOutputFillColor(index, value == null ? null : value.getFillColor());
         }
     }
 }
