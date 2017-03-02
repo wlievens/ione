@@ -1,6 +1,7 @@
 package ione.view;
 
 import ione.model.Point;
+import ione.util.Color;
 
 public interface NodeView
 {
@@ -9,8 +10,6 @@ public interface NodeView
         int getInputCount();
         
         int getOutputCount();
-        
-        String getTitle();
         
         void onPositionUpdated();
     }
@@ -21,7 +20,15 @@ public interface NodeView
     
     void setBox(double x, double y, double width, double height);
     
+    void setFillColor(Color fillColor);
+    
+    void setInputName(int index, String name);
+    
     void setListener(Listener listener);
+    
+    void setOutputName(int index, String name);
+    
+    void setTitle(String title);
     
     void setup();
 }

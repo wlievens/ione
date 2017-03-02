@@ -18,7 +18,7 @@ public class FxGraphEditorView extends Pane implements GraphEditorView
     {
         Node fxNode = (Node)view;
         getChildren().add(fxNode);
-        fxNode.toBack();
+        fxNode.toFront();
     }
     
     @Override
@@ -26,7 +26,7 @@ public class FxGraphEditorView extends Pane implements GraphEditorView
     {
         Node fxNode = (Node)view;
         getChildren().add(fxNode);
-        fxNode.toFront();
+        fxNode.toBack();
     }
     
     @Override
@@ -42,7 +42,7 @@ public class FxGraphEditorView extends Pane implements GraphEditorView
                     System.out.println(fxNode.getLayoutBounds());
                 }
             }
-            if (listener!=null)
+            if (listener != null)
             {
                 listener.onTestClick();
             }

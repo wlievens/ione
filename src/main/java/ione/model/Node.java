@@ -14,11 +14,15 @@ public interface Node
     
     Point getLocation();
     
-    int getOutputCount();
-    
     void setLocation(Point point);
     
+    int getOutputCount();
+    
     List<Output> getOutputs();
+    
+    NodeValue getValue();
+    
+    void setValue(NodeValue value);
     
     void setLocation(double x, double y);
 }

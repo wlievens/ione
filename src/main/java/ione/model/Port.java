@@ -10,5 +10,9 @@ public interface Port
     
     Node getNode();
     
+    PortValue getValue();
+    
+    void setValue(PortValue value);
+    
     Edge removeEdge(Edge edge);
 }

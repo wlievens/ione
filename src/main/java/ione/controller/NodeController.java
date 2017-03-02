@@ -1,7 +1,11 @@
 package ione.controller;
 
+import ione.model.Input;
 import ione.model.Node;
+import ione.model.NodeValue;
+import ione.model.Output;
 import ione.model.Point;
+import ione.model.PortValue;
 import ione.view.NodeView;
 import ione.view.ViewFactory;
 import lombok.Getter;
@@ -54,12 +58,6 @@ public class NodeController
             }
             
             @Override
-            public String getTitle()
-            {
-                return node.toString();
-            }
-            
-            @Override
             public void onPositionUpdated()
             {
                 if (listener != null)
@@ -69,5 +67,27 @@ public class NodeController
             }
         });
         view.setup();
+        updateNodeToView();
+    }
+    
+    private void updateNodeToView()
+    {
+        {
+            NodeValue value = node.getValue();
+            view.setTitle(value == null ? null : value.getName());
+            view.setFillColor(value == null ? null : value.getFillColor());
+        }
+        for (int index = 0; index < node.getInputs().size(); index++)
+        {
+            Input input = node.getInputs().get(index);
+            PortValue value = input.getValue();
+            view.setInputName(index, value == null ? null : value.getName());
+        }
+        for (int index = 0; index < node.getOutputs().size(); index++)
+        {
+            Output output = node.getOutputs().get(index);
+            PortValue value = output.getValue();
+            view.setOutputName(index, value == null ? null : value.getName());
+        }
     }
 }

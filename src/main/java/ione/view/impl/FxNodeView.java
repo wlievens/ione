@@ -4,6 +4,8 @@ import ione.model.Point;
 import ione.view.NodeView;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -16,12 +18,13 @@ import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
-import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import lombok.Setter;
@@ -33,10 +36,21 @@ public class FxNodeView extends BorderPane implements NodeView
 {
     private static final Duration ANIMATION_DURATION = Duration.millis(500);
     
-    private static final float PORT_ARC_RADIUS = 10.0f;
+    private static final float PORT_CONTROL_SIZE = 11.0f;
+    private static final float PORT_PADDING = 4.0f;
+    private static final float BOX_ROUNDING = 5.0f;
+    private static final double TITLE_MARGIN = 4.0;
     
-    private final List<Arc> inputArcs = new ArrayList<>();
-    private final List<Arc> outputArcs = new ArrayList<>();
+    private static final CornerRadii CORNER_RADII = new CornerRadii(BOX_ROUNDING);
+    private static final BorderWidths BORDER_WIDTHS = new BorderWidths(2);
+    
+    private final List<Node> inputConnectors = new ArrayList<>();
+    private final List<Node> outputConnectors = new ArrayList<>();
+    
+    private final List<Label> inputLabels = new ArrayList<>();
+    private final List<Label> outputLabels = new ArrayList<>();
+    
+    private Label titleLabel;
     
     @Setter
     private Listener listener;
@@ -44,10 +58,10 @@ public class FxNodeView extends BorderPane implements NodeView
     @Override
     public Point getInputLocation(int index)
     {
-        if (index >= 0 && index < inputArcs.size())
+        if (index >= 0 && index < inputConnectors.size())
         {
-            Arc arc = inputArcs.get(index);
-            Bounds bounds = arc.localToScene(arc.getBoundsInLocal());
+            Node control = inputConnectors.get(index);
+            Bounds bounds = control.localToScene(control.getBoundsInLocal());
             return getCenter(bounds);
         }
         return null;
@@ -56,10 +70,10 @@ public class FxNodeView extends BorderPane implements NodeView
     @Override
     public Point getOutputLocation(int index)
     {
-        if (index >= 0 && index < outputArcs.size())
+        if (index >= 0 && index < outputConnectors.size())
         {
-            Arc arc = outputArcs.get(index);
-            Bounds bounds = arc.localToScene(arc.getBoundsInLocal());
+            Node control = outputConnectors.get(index);
+            Bounds bounds = control.localToScene(control.getBoundsInLocal());
             return getCenter(bounds);
         }
         return null;
@@ -81,13 +95,76 @@ public class FxNodeView extends BorderPane implements NodeView
     }
     
     @Override
+    public void setFillColor(ione.util.Color fillColor)
+    {
+        Color fxFillColor = FxUtil.fxColor(fillColor);
+        setBackground(new Background(new BackgroundFill(fxFillColor, CORNER_RADII, Insets.EMPTY)));
+        setBorder(new Border(new BorderStroke(fxFillColor.darker(), BorderStrokeStyle.SOLID, CORNER_RADII, BORDER_WIDTHS)));
+    }
+    
+    @Override
+    public void setInputName(int index, String name)
+    {
+        if (index >= 0 && index < inputLabels.size())
+        {
+            inputLabels.get(index).setText(name);
+        }
+    }
+    
+    @Override
+    public void setOutputName(int index, String name)
+    {
+        if (index >= 0 && index < outputLabels.size())
+        {
+            outputLabels.get(index).setText(name);
+        }
+    }
+    
+    @Override
+    public void setTitle(String title)
+    {
+        titleLabel.setText(title == null ? "" : title);
+    }
+    
+    @Override
     public void setup()
     {
-        setLeft(setupLeft());
-        setRight(setupRight());
-        setCenter(setupCenter());
+        setLeft(setupInputBox());
+        setRight(setupOutputBox());
+        setTop(setupTitleBox());
+        
+        setFillColor(ione.util.Color.WHITE);
         
         setOnMouseClicked(event -> System.out.println(event));
+    }
+    
+    private Shape createPortControl()
+    {
+        Rectangle control = new Rectangle();
+        control.setArcWidth(BOX_ROUNDING);
+        control.setArcHeight(BOX_ROUNDING);
+        control.setWidth(PORT_CONTROL_SIZE);
+        control.setHeight(PORT_CONTROL_SIZE);
+        control.setFill(Color.LIGHTSALMON);
+        control.setStroke(Color.DARKRED);
+        control.setFill(Color.LIGHTSALMON);
+        control.setStroke(Color.DARKRED);
+        return control;
+    }
+    
+    private Label createPortLabel()
+    {
+        Label label = new Label();
+        return label;
+    }
+    
+    private GridPane createPortPane()
+    {
+        GridPane pane = new GridPane();
+        pane.setPadding(new Insets(PORT_PADDING));
+        pane.setHgap(PORT_PADDING);
+        pane.setVgap(PORT_PADDING);
+        return pane;
     }
     
     private Region createVBoxSpacer()
@@ -102,37 +179,25 @@ public class FxNodeView extends BorderPane implements NodeView
         return new Point((bounds.getMinX() + bounds.getMaxX()) / 2, (bounds.getMinY() + bounds.getMaxY()) / 2);
     }
     
-    private Node setupCenter()
-    {
-        BorderPane pane = new BorderPane();
-        pane.setTop(setupTitle());
-        pane.setOpacity(1.0);
-        pane.setBackground(new Background(new BackgroundFill(Color.LIGHTSALMON, null, null)));
-        pane.setBorder(new Border(new BorderStroke(Color.DARKRED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        return pane;
-    }
-    
-    private Node setupLeft()
+    private Node setupInputBox()
     {
         VBox pane = new VBox();
         
-        VBox box = new VBox();
+        GridPane box = createPortPane();
         
         if (listener != null)
         {
-            inputArcs.clear();
+            inputConnectors.clear();
+            inputLabels.clear();
             for (int n = 0; n < listener.getInputCount(); ++n)
             {
-                Arc arc = new Arc();
-                arc.setRadiusX(PORT_ARC_RADIUS);
-                arc.setRadiusY(PORT_ARC_RADIUS);
-                arc.setStartAngle(90);
-                arc.setLength(180);
-                arc.setType(ArcType.ROUND);
-                arc.setFill(Color.LIGHTSALMON);
-                arc.setStroke(Color.DARKRED);
-                box.getChildren().add(arc);
-                inputArcs.add(arc);
+                Node control = createPortControl();
+                Label label = createPortLabel();
+                GridPane.setHalignment(label, HPos.LEFT);
+                box.add(control, 0, n);
+                box.add(label, 1, n);
+                inputConnectors.add(control);
+                inputLabels.add(label);
             }
         }
         
@@ -146,30 +211,27 @@ public class FxNodeView extends BorderPane implements NodeView
         return pane;
     }
     
-    private Node setupRight()
+    private Node setupOutputBox()
     {
         VBox pane = new VBox();
         
-        VBox box = new VBox();
+        GridPane box = createPortPane();
         
         if (listener != null)
         {
-            outputArcs.clear();
+            outputConnectors.clear();
+            outputLabels.clear();
             for (int n = 0; n < listener.getOutputCount(); ++n)
             {
-                Arc arc = new Arc();
-                arc.setRadiusX(PORT_ARC_RADIUS);
-                arc.setRadiusY(PORT_ARC_RADIUS);
-                arc.setStartAngle(270);
-                arc.setLength(180);
-                arc.setType(ArcType.ROUND);
-                arc.setFill(Color.LIGHTSALMON);
-                arc.setStroke(Color.DARKRED);
-                box.getChildren().add(arc);
-                outputArcs.add(arc);
+                Node control = createPortControl();
+                Label label = createPortLabel();
+                GridPane.setHalignment(label, HPos.RIGHT);
+                box.add(control, 1, n);
+                box.add(label, 0, n);
+                outputConnectors.add(control);
+                outputLabels.add(label);
             }
         }
-        
         pane.getChildren().add(createVBoxSpacer());
         
         pane.getChildren().add(box);
@@ -180,23 +242,18 @@ public class FxNodeView extends BorderPane implements NodeView
         return pane;
     }
     
-    private Node setupTitle()
+    private Node setupTitleBox()
     {
         AnchorPane pane = new AnchorPane();
-        Label title = new Label();
-        if (listener != null)
-        {
-            title.setText(listener.getTitle());
-        }
-        title.setAlignment(Pos.CENTER);
-        title.setTextAlignment(TextAlignment.CENTER);
-        title.setBackground(new Background(new BackgroundFill(new Color(1.0f, 1.0f, 1.0f, 0.4f), new CornerRadii(3), null)));
-        double margin = 2.0;
-        AnchorPane.setLeftAnchor(title, margin);
-        AnchorPane.setRightAnchor(title, margin);
-        AnchorPane.setTopAnchor(title, margin);
-        AnchorPane.setBottomAnchor(title, margin);
-        pane.getChildren().add(title);
+        titleLabel = new Label();
+        titleLabel.setAlignment(Pos.CENTER);
+        titleLabel.setTextAlignment(TextAlignment.CENTER);
+        titleLabel.setBackground(new Background(new BackgroundFill(new Color(1.0f, 1.0f, 1.0f, 0.4f), new CornerRadii(3), null)));
+        AnchorPane.setLeftAnchor(titleLabel, TITLE_MARGIN);
+        AnchorPane.setRightAnchor(titleLabel, TITLE_MARGIN);
+        AnchorPane.setTopAnchor(titleLabel, TITLE_MARGIN);
+        AnchorPane.setBottomAnchor(titleLabel, TITLE_MARGIN);
+        pane.getChildren().add(titleLabel);
         return pane;
     }
 }
